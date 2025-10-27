@@ -2,5 +2,13 @@ public enum Category {
     FOOD,
     SPORTS,
     GEOGRAPHY,
-    ALL
+    ALL;
+
+    
+    private String name;
+
+    public String getName () {
+        return name;
+    }
+
 }
