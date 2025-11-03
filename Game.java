@@ -6,6 +6,10 @@ public class Game {
     private Scanner input;
     private int streak;
     private boolean isPlaying;
+    private long startTime;
+    private int totalQuestions;
+    private int correctAnswers;
+private long endTime;
 
     public Game(Player player, List<Category> categories){
         this.player = player;
@@ -16,6 +20,7 @@ public class Game {
     }
 
     public void startGame(){
+        startTime = System.currentTimeMillis();
         System.out.println("Welcome " + player.getName() + " to the Quiz Game!");
         System.out.println("You have " + player.getLives() + " lives. Each correct answer = +10 points.");
         System.out.println("3 correct answers in a row gives a Streak. +50 bonus points!\n");
@@ -74,6 +79,7 @@ public class Game {
         Map<String, String> questions = getQuestionsForCategory(category);
 
         for (Map.Entry<String, String> entry : questions.entrySet()) {
+            totalQuestions++; //slår ihopa totalt antalt frågor
             System.out.println(entry.getKey());
 
             QuizTimer quizTimer = new QuizTimer(40); //Timer för 40 sekunder så att den kan delas på 10 för att ej räkna varje sekund!! rör ej
@@ -99,6 +105,7 @@ public class Game {
             if (answer.equals(entry.getValue())) {
                 System.out.println("Correct!\n");
                 player.addScore(10);
+                correctAnswers++;
                 streak++;
                 if (streak % 3 == 0) {
                     player.addScore(50);
@@ -119,8 +126,12 @@ public class Game {
     }
 
     private void endGame() {
+        endTime = System.currentTimeMillis(); 
+        long elapsedTime = (endTime - startTime) / 1000; //slut tid minus startid för att kunna visa sluttiden
         System.out.println("\n🎮 Game Over!");
         System.out.println("Final Score: " + player.getScore());
+        System.out.println("Correct Answers:" + correctAnswers + " out of " + totalQuestions);
+        System.out.println("Time taken: " + elapsedTime + " seconds");
         System.out.println("Thanks for playing, " + player.getName() + "!");
     }
 }
