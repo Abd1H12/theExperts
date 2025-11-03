@@ -19,11 +19,24 @@ public class Game {
         System.out.println("Welcome " + player.getName() + " to the Quiz Game!");
         System.out.println("You have " + player.getLives() + " lives. Each correct answer = +10 points.");
         System.out.println("3 correct answers in a row gives a Streak. +50 bonus points!\n");
-
+        System.out.print("Do you want to play only one category? (yes/no): "); //lade till en funktion för att välja om man vill spela en eller alla kategorier då det va ett av kraven från projektet som Tom lade upp!
+    String playOneCategory = input.next().toLowerCase();
         while(isPlaying && player.isAlive()){
             showCategories();
             Category chosen = chooseCategory();
             askQuestions(chosen);
+        
+            if (player.isAlive()) { // nytt implement för att se om spelaren är vid liv!!,satte in för att den sade att man hade klaratkategorien även om man falerade!
+                if (chosen == Category.ALL) {
+                    System.out.println("You have completed all categories!");
+                    break;
+                }
+        
+                if (playOneCategory.equals("yes") && chosen != Category.ALL) {
+                    System.out.println("You have completed the " + chosen.getName() + " category!");
+                    break;
+                }
+            }
         }
 
         endGame();
@@ -62,8 +75,26 @@ public class Game {
 
         for (Map.Entry<String, String> entry : questions.entrySet()) {
             System.out.println(entry.getKey());
+
+            QuizTimer quizTimer = new QuizTimer(40); //Timer för 40 sekunder så att den kan delas på 10 för att ej räkna varje sekund!! rör ej
+            final boolean[] answered = {false};
+    
+            quizTimer.start(() -> {
+                if (!answered[0]) {
+                    System.out.println("⏰ Time's up! The correct answer was " + entry.getValue() + "\n");
+                    player.looseLife();
+                    streak = 0;
+                    System.out.println("Lives left: " + player.getLives());
+                    if (!player.isAlive()) {
+                        isPlaying = false;
+                    }
+                }
+            });
+
             System.out.print("Your answer: ");
             String answer = input.next().toUpperCase();
+            answered[0] = true; 
+            quizTimer.stop(); 
 
             if (answer.equals(entry.getValue())) {
                 System.out.println("Correct!\n");
